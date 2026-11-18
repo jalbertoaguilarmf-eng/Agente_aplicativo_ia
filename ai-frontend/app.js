@@ -25,9 +25,16 @@ async function sendMessage() {
       })
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (error) {
+      data = {};
+    }
 
-    if (data.reply) {
+    if (!response.ok) {
+      appendMessage(`Error: ${data.error || 'El servidor no pudo procesar la solicitud.'}`, 'assistant');
+    } else if (data.reply) {
       // 3. Mostrar respuesta del agente
       appendMessage(data.reply, 'assistant');
       conversationHistory.push({ role: 'assistant', content: data.reply });
